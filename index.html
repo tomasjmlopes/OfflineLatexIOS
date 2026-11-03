@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#101d32" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="OfflineTeX" />
+  <meta name="description" content="An offline-first scientific LaTeX editor for iPhone, iPad and the web. No account or subscription." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="./vendor/codemirror.css" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script defer src="./vendor/codemirror.js"></script>
+  <script defer src="./vendor/stex.js"></script>
+  <script defer src="./vendor/jszip.min.js"></script>
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body data-view="editor">
+  <div id="app">
+    <header class="topbar">
+      <div class="brand" title="OfflineTeX Research"><span class="brand-mark">T<span class="brand-small">E</span>X</span><span class="brand-name">OfflineTeX <span>Research</span></span></div>
+      <div class="top-project"><label class="sr-only" for="projectPicker">Current project</label><select id="projectPicker" aria-label="Current project"></select></div>
+      <div class="top-actions">
+        <button id="newProjectBtn" class="icon-btn header-optional" title="New project" aria-label="New project">＋ <span>New</span></button>
+        <button id="importBtn" class="icon-btn header-optional" title="Import a project ZIP">⇧ <span>Import</span></button>
+        <button id="exportBtn" class="icon-btn header-optional" title="Export project ZIP">⇩ <span>ZIP</span></button>
+        <button id="offlineBtn" class="icon-btn offline-btn" title="Download compiler packages for offline use">◌ <span>Offline</span></button>
+        <button id="compileBtn" class="primary-btn" title="Compile LaTeX to PDF"><span>▶</span><span>Compile</span></button>
+      </div>
+    </header>
+    <div class="connection-line"><span id="connectionDot" class="connection-dot"></span><span id="connectionText">Local projects · Stored on this device</span><span class="push"></span><span id="saveStatus" aria-live="polite">Ready</span></div>
+    <nav class="mobile-tabs" aria-label="Workspace view">
+      <button type="button" class="mobile-tab" data-target="files">Files</button>
+      <button type="button" class="mobile-tab active" data-target="editor">Editor</button>
+      <button type="button" class="mobile-tab" data-target="pdf">PDF</button>
+    </nav>
+    <main class="workspace">
+      <aside id="filesPanel" class="files-panel">
+        <div class="panel-heading"><div><span class="eyebrow">PROJECT</span><h2 id="projectTitle">My paper</h2></div><button class="muted-icon" id="renameProjectBtn" title="Rename project" aria-label="Rename project">✎</button></div>
+        <div class="project-meta">Saved locally · <span id="fileCount">0</span> files</div>
+        <div class="file-toolbar"><button id="addFileBtn">＋ New file</button><button id="addAssetsBtn">↑ Add files</button></div>
+        <div class="mobile-file-ops"><button id="newMobileBtn">＋ New project</button><button id="importMobileBtn">↑ Import ZIP</button><button id="exportMobileBtn">↓ Export ZIP</button></div>
+        <div id="fileTree" class="file-tree" role="tree" aria-label="Project files"></div>
+        <div class="sidebar-bottom">
+          <div class="help-card"><div class="help-icon">⌘</div><div><strong>Scientific writing</strong><small>Equations, citations, figures, custom classes and bibliographies.</small></div></div>
+          <button class="secondary-btn full" id="projectSettingsBtn">Project settings</button>
+          <button class="secondary-btn full" id="showHelpBtn">Help &amp; install</button>
+        </div>
+      </aside>
+      <section id="editorPanel" class="editor-panel" aria-label="LaTeX editor">
+        <div class="editor-heading"><div id="filenameTabs" class="filename-tabs"></div><div class="editor-actions"><button id="findBtn" title="Find" aria-label="Find">⌕</button><button id="editUndoBtn" title="Undo" aria-label="Undo">↶</button><button id="editRedoBtn" title="Redo" aria-label="Redo">↷</button></div></div>
+        <div class="editor-meta"><span id="langLabel">LATEX</span><span id="cursorInfo">Line 1, column 1</span><span class="push"></span><span id="editorInfo">UTF-8 · Autosave</span></div>
+        <div id="editorHost" class="editor-host"></div>
+        <div id="binaryFileMessage" class="binary-file-message" hidden><div class="large-icon">▧</div><h3>Binary asset</h3><p>This file is part of the project and will be included in compilation and ZIP export.</p><button id="downloadAssetBtn" class="secondary-btn">Download file</button></div>
+        <div class="snippets" aria-label="LaTeX insertion shortcuts">
+          <div class="snippets-scroll">
+            <button data-insert="\\">\</button><button data-insert="{${cursor}}" data-cursor="true">{ }</button><button data-insert="$${cursor}$" data-cursor="true">$ $</button><button data-insert="^{}" data-caret="-1">x<sup>2</sup></button><button data-insert="_{}" data-caret="-1">x<sub>2</sub></button><button data-insert="\\frac{${cursor}}{}" data-cursor="true">½</button><button data-insert="\\begin{equation}\n${cursor}\n\\end{equation}" data-cursor="true">Eqn</button><button data-insert="\\begin{align}\n${cursor}\n\\end{align}" data-cursor="true">Align</button><button data-insert="\\cite{${cursor}}" data-cursor="true">Cite</button><button data-insert="\\ref{${cursor}}" data-cursor="true">Ref</button><button data-insert="\\label{${cursor}}" data-cursor="true">Label</button><button data-insert="\\includegraphics[width=\\linewidth]{${cursor}}" data-cursor="true">Figure</button><button data-insert="\\section{${cursor}}" data-cursor="true">Section</button><button data-insert="\\alpha">α</button><button data-insert="\\beta">β</button><button data-insert="\\theta">θ</button><button data-insert="\\lambda">λ</button><button data-insert="\\Delta">Δ</button><button data-insert="\\pm">±</button><button data-insert="\\times">×</button><button data-insert="\\textbf{${cursor}}" data-cursor="true">Bold</button>
+          </div>
+        </div>
+      </section>
+      <section id="pdfPanel" class="pdf-panel" aria-label="PDF preview">
+        <div class="pdf-heading"><div><span class="pdf-mini">OUTPUT</span><strong>PDF preview</strong></div><div class="preview-actions"><button id="openPdfBtn" title="Open the PDF in another tab" disabled>↗ Open</button><button id="downloadPdfBtn" title="Save the latest PDF" disabled>↓ PDF</button></div></div>
+        <div id="previewEmpty" class="preview-empty"><div class="empty-picture"><div class="empty-paper"><span></span><span></span><span></span><span></span><span></span></div></div><h3>Your paper, beautifully typeset</h3><p>Write your LaTeX, then tap <b>Compile</b> to generate a PDF on this device.</p><button id="compileEmptyBtn" class="secondary-btn">Compile document</button></div>
+        <iframe id="pdfFrame" class="pdf-frame" title="Compiled PDF preview" hidden></iframe>
+        <div id="compileStatus" class="compile-status" hidden><span class="status-spinner"></span><span id="compileStatusText">Compiling…</span></div>
+        <details id="logDetails" class="log-details"><summary>Compilation log <span id="logStatus"></span></summary><pre id="compileLog" aria-live="polite">Compile to view the TeX log.</pre></details>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <div id="modal" class="modal-backdrop" hidden><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-title-row"><h2 id="modalTitle"></h2><button id="modalCloseBtn" aria-label="Close dialog">×</button></div><div id="modalBody"></div><div id="modalActions" class="modal-actions"></div></div></div>
+    <input type="file" id="zipInput" accept=".zip,application/zip,application/x-zip-compressed" hidden />
+    <input type="file" id="assetInput" multiple hidden />
+  </div>
+</body>
+</html>

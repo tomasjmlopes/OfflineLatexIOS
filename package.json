@@ -1,0 +1,14 @@
+{
+  "name": "offlinetex-research",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Free offline-first scientific LaTeX editor for iOS Safari",
+  "scripts": {
+    "build:engine": "node scripts/build-engine.mjs",
+    "test:syntax": "node --check src/app.js && node --check src/db.js && node --check src/archive.js && node --check src/compiler.js && node --check sw.js"
+  },
+  "dependencies": {"@siglum/engine": "0.2.0"},
+  "devDependencies": {"esbuild": "0.25.12"},
+  "license": "MIT"
+}
